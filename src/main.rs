@@ -1,5 +1,6 @@
 use scraper::{Html,Selector};
 use webpage::{Webpage, WebpageOptions};
+use notify_rust::Notification;
 
 #[derive(Clone,Copy,Debug)]
 enum SourceName {
@@ -103,6 +104,12 @@ fn main() {
         println!("Href   : {}", notice.href);
         println!("Source : {:?}", notice.source);
         println!("--------------------------------------\n");
+
+        Notification::new()
+            .summary(&notice.heading)
+            .body(&notice.href)
+            .icon("/usr/share/icons/hicolor/scalable/apps/ibus.svg");
+            
     }
 }
 
