@@ -38,11 +38,16 @@ pub fn get_html(url: &str) -> Result<String, Error> {
 }
 
 fn main() {
-    let mut sources = Vec::new();
-    sources.push((
-        SourceName::BiharUGMAC21,
-        "https://bceceboard.bihar.gov.in/UGMAC21_Aplindex.php",
-    ));
+    let sources = [
+        (
+            SourceName::BiharUGMAC21,
+            "https://bceceboard.bihar.gov.in/UGMAC21_Aplindex.php",
+        ),
+        (
+            SourceName::MCC,
+            "https://mcc.nic.in/WebinfoUG/Page/Page?PageId=1&LangId=P",
+        ),
+    ];
 
     let mut all_notices = Vec::new();
     for src in sources {

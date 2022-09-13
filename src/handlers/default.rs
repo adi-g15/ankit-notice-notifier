@@ -7,7 +7,8 @@ pub fn handler(src: (SourceName, &str)) -> Result<Vec<Notice>, Error> {
     let source_name = format!("{:?}", src.0);
     let new_filepath = format!("{}.html", source_name);
 
-    let xdg_dir = BaseDirectories::with_prefix("ankit-neet-notify")?;
+    let xdg_dir =
+        BaseDirectories::with_prefix(format!("ankit-neet-notify/{}", source_name))?;
 
     let existing_filepath = xdg_dir.find_data_file(&new_filepath);
 
