@@ -1,115 +1,67 @@
-use scraper::{Html,Selector};
-use webpage::{Webpage, WebpageOptions};
+mod handlers;
+use handlers::*;
+
+pub use std::io::Error;
+
 use notify_rust::Notification;
+use webpage::{Webpage, WebpageOptions};
 
-#[derive(Clone,Copy,Debug)]
-enum SourceName {
-    BiharUGMAC21
-}
-
-struct Source {
-    name: SourceName,
-    url: String
+#[derive(Clone, Copy, Debug)]
+pub enum SourceName {
+    BiharUGMAC21,
+    MCC,
 }
 
 #[derive(Debug)]
-struct Notice {
-    pub href: String,   // can be content of onclick
+pub struct Notice {
+    pub link: String, // can be content of onclick
     heading: String,
-    pub source: SourceName
+    pub source: SourceName,
 }
 
 impl Notice {
     pub fn new(heading: String, source: SourceName) -> Notice {
         Notice {
-            href: String::new(),
+            link: String::new(),
             heading,
-            source
+            source,
         }
     }
 }
 
-fn handle_source(src: Source) -> Vec<Notice> {
-    /*
-     * Using curl:
-    let mut handle = Easy::new();
-    handle.url(&src.url).unwrap();
+pub fn get_html(url: &str) -> Result<String, Error> {
+    let webpage = Webpage::from_url(url, WebpageOptions::default())?;
 
-    let mut data = Vec::new();
-
-    {
-        let mut transfer = handle.transfer();
-        transfer.write_function(|bytes| {
-            data.extend_from_slice(bytes);
-            println!("{:?}", bytes);
-            Ok(bytes.len())
-        }).unwrap();
-        transfer.perform().unwrap();
-    }
-
-    let html = Html::parse_document(str::from_utf8(&data).unwrap());
-    */
-
-    let mut webpage_opts = WebpageOptions::default();
-    webpage_opts.allow_insecure = true;
-    let http = Webpage::from_url(&src.url, webpage_opts).unwrap().http;
-    let html = Html::parse_document(&http.body);
-
-    let mut notices = Vec::new();
-
-    let selector = Selector::parse(".noticeamin li").unwrap();
-    for list_item in html.select(&selector) {
-        let mut heading = String::new();
-        for txt in list_item.text() {
-            heading.push_str(txt);
-        }
-
-        heading = String::from(heading.trim());
-        let mut notice = Notice::new(heading, src.name);
-        
-        let anchor = list_item.first_child().unwrap();
-        let av = anchor.value().as_element().unwrap();
-        let onclick = av.attr("onclick");
-        let href = av.attr("href");
-        
-        if onclick.is_some() {
-            let relative_url = onclick.unwrap().split_once('\'').unwrap().1.split_once('\'').unwrap().0;
-            notice.href = String::from("https://bceceboard.bihar.gov.in/");
-            notice.href.push_str(relative_url);
-        } else {
-            notice.href = String::from(href.unwrap());
-        }
-
-        notices.push(notice);
-    }
-
-    notices
+    Ok(webpage.http.body)
 }
 
 fn main() {
     let mut sources = Vec::new();
-    sources.push(Source{
-        name: SourceName::BiharUGMAC21,
-        url: String::from("https://bceceboard.bihar.gov.in/UGMAC21_Aplindex.php")
-    });
+    sources.push((
+        SourceName::BiharUGMAC21,
+        "https://bceceboard.bihar.gov.in/UGMAC21_Aplindex.php",
+    ));
 
-    let mut notices = Vec::new();
+    let mut all_notices = Vec::new();
     for src in sources {
-        notices.append( &mut handle_source(src) );
+        match handle_source(src) {
+            Ok(mut notices) => all_notices.append(&mut notices),
+            Err(e) => {
+                println!("Failed to fetch {:?}. Error: {:?}", src, e);
+            }
+        }
     }
 
-    for notice in notices {
+    for notice in all_notices {
         println!("\n--------------------------------------");
         println!("{}", notice.heading);
-        println!("Href   : {}", notice.href);
+        println!("Link   : {}", notice.link);
         println!("Source : {:?}", notice.source);
         println!("--------------------------------------\n");
 
         Notification::new()
             .summary(&notice.heading)
-            .body(&notice.href)
+            .body(&notice.link)
             .icon("/usr/share/icons/hicolor/scalable/apps/ibus.svg");
-            
     }
 }
-
