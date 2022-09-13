@@ -30,7 +30,9 @@ impl Notice {
 }
 
 pub fn get_html(url: &str) -> Result<String, Error> {
-    let webpage = Webpage::from_url(url, WebpageOptions::default())?;
+    let mut options = WebpageOptions::default();
+    options.allow_insecure = true;
+    let webpage = Webpage::from_url(url, options)?;
 
     Ok(webpage.http.body)
 }

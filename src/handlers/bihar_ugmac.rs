@@ -20,7 +20,7 @@ pub fn handler(src: (SourceName, &str)) -> Result<Vec<Notice>, Error> {
         let anchor = list_item.first_child().unwrap();
         let av = anchor.value().as_element().unwrap();
         let onclick = av.attr("onclick");
-        let link = av.attr("link");
+        let link = av.attr("href");
 
         if onclick.is_some() {
             let relative_url = onclick
