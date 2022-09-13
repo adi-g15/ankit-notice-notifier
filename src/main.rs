@@ -8,7 +8,7 @@ use webpage::{Webpage, WebpageOptions};
 
 #[derive(Clone, Copy, Debug)]
 pub enum SourceName {
-    BiharUGMAC21,
+    BiharUGMAC22,
     MCC,
 }
 
@@ -40,8 +40,9 @@ pub fn get_html(url: &str) -> Result<String, Error> {
 fn main() {
     let sources = [
         (
-            SourceName::BiharUGMAC21,
-            "https://bceceboard.bihar.gov.in/UGMAC21_Aplindex.php",
+            SourceName::BiharUGMAC22,
+            "https://bceceboard.bihar.gov.in/UGMACIndex.php",
+            //"https://bceceboard.bihar.gov.in/UGMAC22_Aplindex.php",
         ),
         (
             SourceName::MCC,
