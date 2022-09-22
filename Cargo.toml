@@ -9,7 +9,7 @@ name = "notice-notifier-daemon"
 path = "src/main.rs"
 
 [[bin]]
-name = "nmc-data-collector"
+name = "data-collector-nmc"
 path = "src/data_collectors/nmc.rs"
 
 [dependencies]
