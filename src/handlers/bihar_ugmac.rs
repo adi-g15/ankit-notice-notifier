@@ -2,13 +2,13 @@ use crate::{get_html, Error, Notice, SourceName};
 use scraper::{Html, Selector};
 
 pub fn handler(src: (SourceName, &str)) -> Result<Vec<Notice>, Error> {
-    let body = get_html(src.1)?;
-    let html = Html::parse_document(&body);
+    let html = get_html(src.1)?;
+    let document = Html::parse_document(&html);
 
     let mut notices = Vec::new();
 
     let selector = Selector::parse(".noticeamin li").unwrap();
-    for list_item in html.select(&selector) {
+    for list_item in document.select(&selector) {
         let mut heading = String::new();
         for txt in list_item.text() {
             heading.push_str(txt);

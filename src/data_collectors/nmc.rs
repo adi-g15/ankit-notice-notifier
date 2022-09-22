@@ -103,9 +103,8 @@ fn save_to_mariadb(title: &String, value: &String, date: &String) {
 
 // https://www.nmc.org.in/
 fn main() -> Result<(), Error> {
-    // TODO: Change naming of body to html, and html to document
-    let body = get_html("https://www.nmc.org.in/")?;
-    let html = Html::parse_document(&body);
+    let html = get_html("https://www.nmc.org.in/")?;
+    let document = Html::parse_document(&html);
 
     // SAFETY: If this fails, it will fail during development too
     let selector = Selector::parse(".col-md-2.main-block1.bg3.hvr-grow.widthmain").unwrap();
@@ -113,7 +112,7 @@ fn main() -> Result<(), Error> {
     // Get current date, in "YYYY-MM-DD" format
     let date = chrono::Local::now().format("%Y-%m-%d").to_string();
 
-    for list_item in html.select(&selector) {
+    for list_item in document.select(&selector) {
         let title_selector = Selector::parse("p.pnameclass").unwrap();
         let value_selector = Selector::parse("p.main-block-numbersize").unwrap();
 
