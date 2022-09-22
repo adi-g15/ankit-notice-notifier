@@ -4,11 +4,22 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "notice-notifier-daemon"
+path = "src/main.rs"
+
+[[bin]]
+name = "nmc-data-collector"
+path = "src/data_collectors/nmc.rs"
 
 [dependencies]
+chrono = "0.4.22"
 curl = "0.4.42"
+dotenv = "0.15.0"
 markup5ever = "0.10.1"
+mysql = "22.2.0"
 notify-rust = "4.5.5"
 scraper = "0.12.0"
 webpage = "1.4.0"
+whoami = "1.2.3"
 xdg = "2.4.1"
