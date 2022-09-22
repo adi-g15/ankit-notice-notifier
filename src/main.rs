@@ -60,6 +60,11 @@ fn main() {
         }
     }
 
+    if all_notices.is_empty() {
+        println!("No new notices");
+        return;
+    }
+
     for notice in all_notices {
         println!("\n--------------------------------------");
         println!("{}", notice.heading);
